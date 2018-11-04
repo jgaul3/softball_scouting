@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import json
 import sys
 import re
+import unidecode
 
 
 def get_soup(url):
@@ -13,7 +14,7 @@ def get_soup(url):
     """
     req = urllib.request.Request(url, headers={'User-Agent': "Scraper"})
     html = urllib.request.urlopen(req)
-    return BeautifulSoup(html, 'html.parser')
+    return BeautifulSoup(html, "html.parser", from_encoding="utf-8").encode("utf-8")
 
 
 def get_roster(team_code):
@@ -35,7 +36,7 @@ def get_roster(team_code):
         player_fields = player.findAll("td")
 
         for i in range(len(headers)):
-            to_add = player_fields[i].getText(strip=True)
+            to_add = unidecode.unidecode(player_fields[i].getText(strip=True))
             player_dict[headers[i]] = to_add if to_add else "0"
 
         to_return.append(player_dict)
